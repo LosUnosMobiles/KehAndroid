@@ -9,12 +9,31 @@ const MainScreen = () => {
 
     useEffect(() => {
       if (ref.current) {
-        const ctx = ref.current.getContext('2d');
+        const canvas = ref.current;
+        canvas.width = 400; // Set the canvas width
+        canvas.height = 600; // Set the canvas height
+        const ctx = canvas.getContext('2d');
+        const { width, height } = canvas;
         ctx.beginPath();
-        ctx.arc(100, 100, 40, 0, 2 * Math.PI);
+        ctx.arc(.45*width, height/2, width/3, 0, 2 * Math.PI);
         ctx.closePath();
-        ctx.fillStyle = 'blue';
+        ctx.fillStyle = '#F8F2E8';
         ctx.fill();
+        ctx.lineWidth = 20; // Set the line width
+        ctx.strokeStyle = 'green'; // Set the stroke color
+        ctx.stroke(); // Apply the stroke
+        ctx.beginPath();
+        ctx.arc(.45*width, height/3.55, width/20, 0, 2 * Math.PI);
+        ctx.closePath();
+        ctx.fillStyle = '#D1671B';
+        ctx.fill();
+         // Draw text in the middle of the first circle
+    ctx.fillStyle = '#D1671B'; // Set the text color
+    ctx.font = '60px Arial'; // Set the font size and family
+    ctx.textAlign = 'center'; // Center the text horizontally
+    ctx.textBaseline = 'middle'; // Center the text vertically
+    ctx.fillText('15,5°', 0.45*width, height / 2);
+
       }
     }, [ref]);
 
@@ -24,8 +43,11 @@ const MainScreen = () => {
             <Text style={styles.text}>Vatupassi</Text>
         </View>
         <SafeAreaView style={{ flex: 1 }}>
-            <Canvas style={{ width: '100%', height: '100%', backgroundColor: 'black' }} ref={ref} />
+            <Canvas ref={ref} />
         </SafeAreaView>
+        <View style={styles.container}>
+            <Text style={styles.bottomText}></Text>
+        </View>
 
         </>
     );
@@ -33,14 +55,29 @@ const MainScreen = () => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#f5f5f5',
+        justifyContent: 'center',
+        backgroundColor: '#D1671B',
+        padding: 16,
+        margin: 0,
     },
     text: {
-        fontSize: 20,
-        color: '#333',
+        fontSize: 32, // Increase the font size
+        color: 'green', // Set the text color
+        padding: 16,
+    },
+    canvas:{
+        margin: 0,
+        padding: 0,
+        height: '400px',
+        width: '100%',
+        backgroundColor: '#eeeeee',
+    },
+    bottomText: {
+        fontSize: 24, // Increase the font size
+        fontWeight: 'bold',
+        color: '#D1671B' // Make the text bold
+        
     },
 });
 
