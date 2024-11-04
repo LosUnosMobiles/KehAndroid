@@ -2,10 +2,11 @@ import { View, Text, StyleSheet } from 'react-native';
 import React, { useRef, useEffect } from 'react';
 import { SafeAreaView, Alert } from 'react-native';
 import Canvas from 'react-native-canvas';
+import useSpiritLevel from '../hooks/vatuHook';
 
 const MainScreen = () => {
     const ref = useRef(null);
-
+    const orientation = useSpiritLevel();
 
     useEffect(() => {
       if (ref.current) {
