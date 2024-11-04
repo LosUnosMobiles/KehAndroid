@@ -9,9 +9,9 @@
  * @requires expo-sensors.DeviceMotion
  * 
  * @returns {Object} orientation - The current orientation of the device.
- * @returns {number} orientation.alpha - The alpha rotation (in degrees), representing the rotation around the z-axis.
- * @returns {number} orientation.beta - The beta rotation (in degrees), representing the rotation around the x-axis.
- * @returns {number} orientation.gamma - The gamma rotation (in degrees), representing the rotation around the y-axis.
+ * @returns {number} orientation.alpha - The alpha rotation (in radians), representing the rotation around the z-axis.
+ * @returns {number} orientation.beta - The beta rotation (in radians), representing the rotation around the x-axis.
+ * @returns {number} orientation.gamma - The gamma rotation (in radians), representing the rotation around the y-axis.
  */
 
 import { useState, useEffect } from 'react';
