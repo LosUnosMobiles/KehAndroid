@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import useSpiritLevel from '../hooks/vatuHook';
 import { View, Text, StyleSheet } from 'react-native';
 
@@ -8,9 +8,9 @@ const SpiritLevelDisplay = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.header}>Device Orientation</Text>
-            <Text>Alpha (z-axis): {orientation.alpha.toFixed(2)}</Text>
-            <Text>Beta (x-axis): {orientation.beta.toFixed(2)}</Text>
-            <Text>Gamma (y-axis): {orientation.gamma.toFixed(2)}</Text>
+            <Text>Alpha (z-axis): {orientation.x.toFixed(2)}</Text>
+            <Text>Beta (x-axis): {orientation.y.toFixed(2)}</Text>
+            <Text>Gamma (y-axis): {orientation.z.toFixed(2)}</Text>
         </View>
     );
 };
