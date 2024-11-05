@@ -19,19 +19,38 @@ import { DeviceMotion } from 'expo-sensors';
 
 const useSpiritLevel = () => {
     const [orientation, setOrientation] = useState({ alpha: 0, beta: 0, gamma: 0 });
+    const [hasPermission, setHasPermission] = useState(null);
 
     useEffect(() => {
+        const requestPermission = async () => {
+            const { status } = await DeviceMotion.requestPermissionsAsync();
+            setHasPermission(status === 'granted');
+        };
+
+        requestPermission();
+    }, []);
+
+    useEffect(() => {
+        if (hasPermission === null) {
+            return;
+        }
+
+        if (!hasPermission) {
+            console.warn('Permission to access motion data was denied');
+            return;
+        }
+
         const subscription = DeviceMotion.addListener((motionData) => {
             const { alpha, beta, gamma } = motionData.rotation;
             setOrientation({ alpha, beta, gamma });
         });
 
-        DeviceMotion.setUpdateInterval(100); // Set the update interval to 100ms
+        DeviceMotion.setUpdateInterval(200); // Set the update interval to 200ms
 
         return () => {
             subscription.remove();
         };
-    }, []);
+    }, [hasPermission]);
 
     return orientation;
 };
