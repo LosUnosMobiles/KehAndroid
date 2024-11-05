@@ -12,14 +12,18 @@
  * @returns {number} orientation.alpha - The alpha rotation (in radians), representing the rotation around the z-axis.
  * @returns {number} orientation.beta - The beta rotation (in radians), representing the rotation around the x-axis.
  * @returns {number} orientation.gamma - The gamma rotation (in radians), representing the rotation around the y-axis.
+ * @returns {number} orientation.combinedAngle - The combined angle of alpha and beta (in radians), calculated using the Pythagorean theorem.
  */
 
 import { useState, useEffect } from 'react';
 import { DeviceMotion } from 'expo-sensors';
 
 const useSpiritLevel = () => {
-    const [orientation, setOrientation] = useState({ alpha: 0, beta: 0, gamma: 0 });
+    const [orientation, setOrientation] = useState({ alpha: 0, beta: 0, gamma: 0, combinedAngle: 0 });
     const [hasPermission, setHasPermission] = useState(null);
+
+    // Calculate the combined angle using the Pythagorean theorem
+    orientation.combinedAngle = Math.sqrt(orientation.beta ** 2 + orientation.gamma ** 2).toFixed(2);
 
     useEffect(() => {
         const requestPermission = async () => {
@@ -42,7 +46,7 @@ const useSpiritLevel = () => {
 
         const subscription = DeviceMotion.addListener((motionData) => {
             const { alpha, beta, gamma } = motionData.rotation;
-            setOrientation({ alpha, beta, gamma });
+            setOrientation({ alpha, beta, gamma, combinedAngle: Math.sqrt(beta ** 2 + gamma ** 2) });
         });
 
         DeviceMotion.setUpdateInterval(200); // Set the update interval to 200ms
@@ -54,5 +58,7 @@ const useSpiritLevel = () => {
 
     return orientation;
 };
+
+export const toDegrees = (radians) => (radians * 180) / Math.PI;
 
 export default useSpiritLevel;
