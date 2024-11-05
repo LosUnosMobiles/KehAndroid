@@ -7,6 +7,7 @@ import {
 import React, {useRef, useEffect, useState} from 'react';
 import Canvas from 'react-native-canvas';
 import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
+import colorScheme from "../styles/colorScheme";
 
 // TODO: Replace with the real hook
 import leikkiHook from "../hooks/leikkiHook";
@@ -85,7 +86,7 @@ const MainScreen = () => {
         ctx.fillStyle = '#F8F2E8';
         ctx.fill();
         ctx.lineWidth = 20; // Set the line width
-        ctx.strokeStyle = 'green'; // Set the stroke color
+        ctx.strokeStyle = colorScheme.accent; // Set the stroke color
         ctx.stroke(); // Apply the stroke
     }
 
@@ -108,7 +109,7 @@ const MainScreen = () => {
         ctx.beginPath();
         ctx.arc(startX2 + x, startY2 - y, radius2, 0, 2 * Math.PI);
         ctx.closePath();
-        ctx.fillStyle = '#D1671B';
+        ctx.fillStyle = colorScheme.primary;
         ctx.fill();
     }
 
@@ -120,7 +121,7 @@ const MainScreen = () => {
     const showSlopeDegrees = (canvas, degreesText) => {
         let ctx = canvas.getContext('2d');
         const [width, height] = [canvas.width, canvas.height];
-        ctx.fillStyle = '#D1671B'; // Set the text color
+        ctx.fillStyle = colorScheme.text; // Set the text color
         ctx.font = '60px Arial'; // Set the font size and family
         ctx.textAlign = 'center'; // Center the text horizontally
         ctx.textBaseline = 'middle'; // Center the text vertically
@@ -132,7 +133,7 @@ const MainScreen = () => {
     }, [canvasRef, slopeAndOrientation]);
 
     return (
-        <SafeAreaView style={{height:'100%', backgroundColor: '#eee'}}>
+        <SafeAreaView style={styles.safeArea}>
             <View style={styles.banner}>
                 <Text style={styles.bannerText}>Vatupassi</Text>
             </View>
@@ -151,36 +152,39 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'column',
         alignItems: 'center',
-        // backgroundColor: '#D1671B',
         padding: 16,
         margin: 0,
     },
     canvas: {
         marginTop: "auto",
         marginBottom: "auto",
-        backgroundColor: '#eeeeee',
+        backgroundColor: colorScheme.background,
     },
     padding: {
         height:20,
     },
     banner: {
-        // backgroundColor: '#D1671B',
-        backgroundColor: 'gray',
+        backgroundColor: colorScheme.primary,
         width: "100%",
         alignItems: "center",
     },
     bannerText: {
         fontSize: 32, // Increase the font size
-        color: 'black', // Set the text color
+        color: colorScheme.lightText, // Set the text color
         padding: 16,
         width: "100%",
         textAlign: 'center',
     },
-    bottomText: {
-        fontSize: 24, // Increase the font size
-        fontWeight: 'bold',
-        color: '#D1671B' // Make the text bold
-    },
+    // bottomText: {
+    //     fontSize: 24, // Increase the font size
+    //     fontWeight: 'bold',
+    //     color: colorScheme.text // Make the text bold
+    // },
+    safeArea: {
+        height:'100%',
+        backgroundColor: colorScheme.background
+    }
+
 });
 
 export default MainScreen;
