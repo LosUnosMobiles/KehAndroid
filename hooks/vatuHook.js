@@ -26,7 +26,7 @@ const useSpiritLevel = () => {
 
     // Calculate the combined angle using the Pythagorean theorem
     
-    orientation.combinedAngle = combine(orientation.beta, orientation.gamma);
+    //orientation.combinedAngle = combine(orientation.beta, orientation.gamma);
 
     useEffect(() => {
         const requestPermission = async () => {
@@ -45,7 +45,7 @@ const useSpiritLevel = () => {
         const subscription = DeviceMotion.addListener((motionData) => {
             if (motionData.rotation) { // Added check for motionData.rotation
                 const { alpha,beta, gamma } = motionData.rotation;
-                setOrientation({ alpha, beta, gamma, combinedAngle: combine(beta, gamma), direction: toDirection(beta, gamma), status: hasPermission });
+                setOrientation({ alpha, beta, gamma, combinedAngle: toDegrees(combine(beta, gamma)).toFixed(2), direction: toDirection(beta, gamma), status: hasPermission });
             }
         });
 

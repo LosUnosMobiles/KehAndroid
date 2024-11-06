@@ -66,6 +66,7 @@ const MainScreen = () => {
      * @param canvas
      */
     const drawLargeCircles = (canvas) => {
+
         const ctx = canvas.getContext('2d');
         const [width, height] = [canvas.width, canvas.height];
 
@@ -142,6 +143,7 @@ const MainScreen = () => {
         </SafeAreaView>
     );
 };
+
 
 const styles = StyleSheet.create({
     container: {
