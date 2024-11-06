@@ -22,6 +22,7 @@ const SpiritLevelDisplay = () => {
             <Text>Beta (x-axis): {betaDegrees.toFixed(2)}°</Text>
             <Text>Gamma (y-axis): {gammaDegrees.toFixed(2)}°</Text>
             <Text>Combined Angle: {combinedAngleDegrees.toFixed(2)}°</Text>
+            <Text>Direction: {orientation.direction.toFixed(2)}°</Text>
             <Text style={styles.levelText}>{isLevel ? 'The device is level' : 'The device is not level'}</Text>
         </View>
     );

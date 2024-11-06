@@ -1,5 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
+import SpiritLevelDisplay from './screens/TestScreen';
 import MainScreen from "./screens/MainScreen";
 
 export default function App() {
