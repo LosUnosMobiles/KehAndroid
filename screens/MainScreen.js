@@ -4,20 +4,19 @@ import {
     StyleSheet,
     Dimensions
 } from 'react-native';
-import React, {useRef, useEffect, useState} from 'react';
+import React, {useRef, useEffect} from 'react';
 import Canvas from 'react-native-canvas';
-import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import colorScheme from "../styles/colorScheme";
 
-// TODO: Replace with the real hook
-import leikkiHook from "../hooks/leikkiHook";
+import vatuHook from "../hooks/vatuHook";
 
 const windowDimensions = Dimensions.get('window');
 const screenDimensions = Dimensions.get('screen');
 
 const MainScreen = () => {
     const canvasRef = useRef(null);
-    const slopeAndOrientation = leikkiHook();
+    const slopeAndOrientation = vatuHook();
     const dimensions = {
         window: windowDimensions,
         screen: screenDimensions,
@@ -39,11 +38,10 @@ const MainScreen = () => {
      */
     const getPositionUsingCurrentDirection = (canvas) => {
         const [width, height] = [canvas.width, canvas.height];
-        const direction = slopeAndOrientation[1];
-        console.log(direction)
+        const direction = slopeAndOrientation.direction;
         // const radians = direction * (Math.PI / 180);
-        const xVal = Math.sin(direction) * getRadius(width, height);
-        const yVal = Math.cos(direction) * getRadius(width, height);
+        const xVal = Math.cos(direction) * getRadius(width, height);
+        const yVal = Math.sin(-direction) * getRadius(width, height);
         return {x: xVal, y: yVal};
     }
 
@@ -56,12 +54,10 @@ const MainScreen = () => {
             const canvas = canvasRef.current;
             canvas.width = dimensions.window.width; // Set the canvas width
             canvas.height = dimensions.window.width; // Set the canvas height
-            console.log(canvas.height);
-
 
             drawLargeCircles(canvas);
             drawOrientationDirectionCircle(canvas);
-            showSlopeDegrees(canvas, slopeAndOrientation[0]);
+            showSlopeDegrees(canvas, slopeAndOrientation.combinedAngle);
         }
     }
 

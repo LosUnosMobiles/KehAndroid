@@ -37,15 +37,6 @@ const useSpiritLevel = () => {
     }, []);
 
     useEffect(() => {
-        if (hasPermission === null) {
-            return;
-        }
-
-        if (!hasPermission) {
-            console.warn('Permission to access motion data was denied');
-            return;
-        }
-
         const subscription = DeviceMotion.addListener((motionData) => {
             const { alpha, beta, gamma } = motionData.rotation;
             setOrientation({ alpha, beta, gamma, combinedAngle: combine(beta, gamma), direction: toDirection(beta, gamma), status: hasPermission });
