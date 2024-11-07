@@ -10,7 +10,7 @@ import vatuHook from "../hooks/vatuHook";
 const fontFamily = Platform.select({ ios: "Helvetica", default: "sans-serif" });
 const fontStyle = {
   fontFamily,
-  fontSize: 36,
+  fontSize: 60,
   fontStyle: "normal",
   fontWeight: "normal",
 };
@@ -19,8 +19,8 @@ const font = matchFont(fontStyle);
 const windowDimensions = Dimensions.get('window');
 const screenDimensions = Dimensions.get('screen');
 
-const textXOffset = 0.1*windowDimensions.width;
-const textYOffset = 15;
+const textXOffset = 0.15*windowDimensions.width;
+const textYOffset = 20;
 
 const MainScreen = () => {
     const slopeAndOrientation = vatuHook();
@@ -37,7 +37,7 @@ const MainScreen = () => {
      * @returns {number}
      */
     const getRadius = (width, height) => {
-        return Math.min(width, height) / 3;
+        return Math.min(width, height) / 2.5;
     }
 
     /**
@@ -65,13 +65,13 @@ const MainScreen = () => {
                     <Circle  // Rim
                         cx={dimensions.window.width / 2}
                         cy={dimensions.window.width / 2}
-                        r={getRadius(dimensions.window.width, dimensions.window.width)}
+                        r={getRadius(dimensions.window.width, dimensions.window.width)+10}
                         color={colorScheme.accent}
                     />
                     <Circle  // Inner circle
                         cx={dimensions.window.width / 2}
                         cy={dimensions.window.width / 2}
-                        r={getRadius(dimensions.window.width, dimensions.window.width) - 20}
+                        r={getRadius(dimensions.window.width, dimensions.window.width) - 10}
                         color={colorScheme.innerCircle}
                     />
                     <Circle // Indicator circle
