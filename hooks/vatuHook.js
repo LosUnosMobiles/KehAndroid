@@ -21,42 +21,40 @@ import { DeviceMotion } from 'expo-sensors';
 
 const useSpiritLevel = () => {
     const [hasPermission, setHasPermission] = useState(null);
+    const [isAvailable, setIsAvailable] = useState(null);
     const [orientation, setOrientation] = useState({ alpha: 0, beta: 0, gamma: 0, combinedAngle: 0, direction: 0, status: hasPermission });
 
     // Calculate the combined angle using the Pythagorean theorem
     
-    orientation.combinedAngle = combine(orientation.beta, orientation.gamma);
+    //orientation.combinedAngle = combine(orientation.beta, orientation.gamma);
 
     useEffect(() => {
         const requestPermission = async () => {
             const { status } = await DeviceMotion.requestPermissionsAsync();
             setHasPermission(status === 'granted');
+            setIsAvailable(await DeviceMotion.isAvailableAsync()) 
         };
 
         requestPermission();
     }, []);
 
     useEffect(() => {
-        if (hasPermission === null) {
+        if (!hasPermission || !isAvailable ) {
             return;
         }
-
-        if (!hasPermission) {
-            console.warn('Permission to access motion data was denied');
-            return;
-        }
-
         const subscription = DeviceMotion.addListener((motionData) => {
-            const { alpha, beta, gamma } = motionData.rotation;
-            setOrientation({ alpha, beta, gamma, combinedAngle: combine(beta, gamma), direction: toDirection(beta, gamma), status: hasPermission });
+            if (motionData.rotation) { // Added check for motionData.rotation
+                const { alpha,beta, gamma } = motionData.rotation;
+                setOrientation({ alpha, beta, gamma, combinedAngle: toDegrees(combine(beta, gamma)).toFixed(2), direction: toDirection(beta, gamma), status: hasPermission });
+            }
         });
 
-        DeviceMotion.setUpdateInterval(200); // Set the update interval to 200ms
+        DeviceMotion.setUpdateInterval(1200); // Set the update interval to 200ms
 
         return () => {
             subscription.remove();
         };
-    }, [hasPermission]);
+    }, [hasPermission, isAvailable]);
 
     return orientation;
 };

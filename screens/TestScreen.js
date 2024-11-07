@@ -5,9 +5,6 @@ import { View, Text, StyleSheet } from 'react-native';
 const SpiritLevelDisplay = () => {
     const orientation = useSpiritLevel();
 
-    // Convert radians to degrees
-    //const toDegrees = (radians) => (radians * 180) / Math.PI;
-
     const alphaDegrees = toDegrees(orientation.alpha);
     const betaDegrees = toDegrees(orientation.beta);
     const gammaDegrees = toDegrees(orientation.gamma);
