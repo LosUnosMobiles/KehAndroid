@@ -1,21 +1,26 @@
-import {
-    View,
-    Text,
-    StyleSheet,
-    Dimensions
-} from 'react-native';
-import React, {useRef, useEffect} from 'react';
-import Canvas from 'react-native-canvas';
+import {View, Text, StyleSheet, Dimensions, Platform} from 'react-native';
+import React, {useRef, useEffect,useReducer} from 'react';
+//import Canvas from 'react-native-canvas';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import colorScheme from "../styles/colorScheme";
+import { Canvas, Circle, Group, Text as SkiaText, useFont, matchFont, Skia } from "@shopify/react-native-skia";
 
 import vatuHook from "../hooks/vatuHook";
+
+const fontFamily = Platform.select({ ios: "Helvetica", default: "serif" });
+const fontStyle = {
+  fontFamily,
+  fontSize: 14,
+  fontStyle: "italic",
+  fontWeight: "bold",
+};
+const font = matchFont(fontStyle);
 
 const windowDimensions = Dimensions.get('window');
 const screenDimensions = Dimensions.get('screen');
 
 const MainScreen = () => {
-    const canvasRef = useRef(null);
+    //const canvasRef = useRef(null);
     const slopeAndOrientation = vatuHook();
     const dimensions = {
         window: windowDimensions,
@@ -34,12 +39,12 @@ const MainScreen = () => {
 
     /**
      * Calculate small indicator circle coordinates from direction given by useSpiritLevel-hook.
+     * @param width width of the canvas
+     * @param height height of the canvas
      * @returns {{x: number, y: number}}
      */
-    const getPositionUsingCurrentDirection = (canvas) => {
-        const [width, height] = [canvas.width, canvas.height];
-        const direction = slopeAndOrientation.direction;
-        // const radians = direction * (Math.PI / 180);
+    const getPositionUsingCurrentDirection = (width,height) => {
+        const direction = slopeAndOrientation.direction; //direction in radians
         const xVal = Math.cos(direction) * getRadius(width, height);
         const yVal = Math.sin(-direction) * getRadius(width, height);
         return {x: xVal, y: yVal};
@@ -49,7 +54,7 @@ const MainScreen = () => {
      * Draws the spirit level indicator.
      * @param ref
      */
-    const drawSpiritLevel = () => {
+    /*const drawSpiritLevel = () => {
         if (canvasRef.current) {
             const canvas = canvasRef.current;
             canvas.width = dimensions.window.width; // Set the canvas width
@@ -59,13 +64,13 @@ const MainScreen = () => {
             drawOrientationDirectionCircle(canvas);
             showSlopeDegrees(canvas, slopeAndOrientation.combinedAngle);
         }
-    }
+    }*/
 
     /**
      * Draw spirit level indicator outer circle onto `canvas`
      * @param canvas
      */
-    const drawLargeCircles = (canvas) => {
+    /*const drawLargeCircles = (canvas) => {
 
         const ctx = canvas.getContext('2d');
         const [width, height] = [canvas.width, canvas.height];
@@ -85,13 +90,13 @@ const MainScreen = () => {
         ctx.lineWidth = 20; // Set the line width
         ctx.strokeStyle = colorScheme.accent; // Set the stroke color
         ctx.stroke(); // Apply the stroke
-    }
+    }*/
 
     /**
      * Draw slope direction indicator circle.
      * @param canvas
      */
-    const drawOrientationDirectionCircle = (canvas) => {
+    /*const drawOrientationDirectionCircle = (canvas) => {
         const [width, height] = [canvas.width, canvas.height];
         const origo = {x: width / 2, y: height / 2};
 
@@ -108,14 +113,14 @@ const MainScreen = () => {
         ctx.closePath();
         ctx.fillStyle = colorScheme.primary;
         ctx.fill();
-    }
+    }*/
 
     /**
      * Draw slope degrees text onto canvas.
      * @param canvas
      * @param degreesText
      */
-    const showSlopeDegrees = (canvas, degreesText) => {
+    /*const showSlopeDegrees = (canvas, degreesText) => {
         let ctx = canvas.getContext('2d');
         const [width, height] = [canvas.width, canvas.height];
         ctx.fillStyle = colorScheme.text; // Set the text color
@@ -123,11 +128,8 @@ const MainScreen = () => {
         ctx.textAlign = 'center'; // Center the text horizontally
         ctx.textBaseline = 'middle'; // Center the text vertically
         ctx.fillText(degreesText + ' °', 0.5 * width, height / 2);
-    }
+    }*/
 
-    useEffect(() => {
-        drawSpiritLevel(canvasRef);
-    }, [canvasRef, slopeAndOrientation]);
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -135,7 +137,23 @@ const MainScreen = () => {
                 <Text style={styles.bannerText}>Vatupassi</Text>
             </View>
             <View style={styles.padding}/>
-            <Canvas ref={canvasRef} style={{...styles.canvas}}/>
+            <Canvas style={{...styles.canvas}}>
+                <Group>
+                    <Circle
+                        cx={dimensions.window.width / 2}
+                        cy={dimensions.window.width / 2}
+                        r={getRadius(dimensions.window.width, dimensions.window.width)}
+                        color={colorScheme.accent}
+                    />
+                    <Circle
+                        cx={dimensions.window.width / 2 + getPositionUsingCurrentDirection(dimensions.window.width, dimensions.window.width).x}
+                        cy={dimensions.window.width / 2 + getPositionUsingCurrentDirection(dimensions.window.width, dimensions.window.width).y}
+                        r={Math.min(dimensions.window.width, dimensions.window.width) / 20}
+                        color={colorScheme.primary}
+                    />
+                </Group>
+                <SkiaText  x={dimensions.window.width / 2} y={dimensions.window.width / 2} text="Hello World"  font={font}/>
+            </Canvas>
             <View style={styles.padding}/>
             <View style={styles.banner}>
                 <Text style={styles.bannerText}>FUBAR</Text>
@@ -157,6 +175,8 @@ const styles = StyleSheet.create({
         marginTop: "auto",
         marginBottom: "auto",
         backgroundColor: colorScheme.background,
+        width: windowDimensions.width,
+        height: windowDimensions.width,
     },
     padding: {
         height:20,
