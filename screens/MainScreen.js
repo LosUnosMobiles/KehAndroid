@@ -24,7 +24,6 @@ const textYOffset = 20;
 
 const MainScreen = () => {
     const slopeAndOrientation = vatuHook();
-    const degreesRef = useRef(null);
     const dimensions = {
         window: windowDimensions,
         screen: screenDimensions,
@@ -81,7 +80,7 @@ const MainScreen = () => {
                         color={colorScheme.primary}
                     />
                 </Group>
-                <SkiaText ref={degreesRef} x={dimensions.window.width / 2 - textXOffset} y={dimensions.window.width / 2 + textYOffset} text={slopeAndOrientation.combinedAngle + "°"}  font={font}/>
+                <SkiaText x={dimensions.window.width / 2 - textXOffset} y={dimensions.window.width / 2 + textYOffset} text={slopeAndOrientation.combinedAngle + "°"}  font={font}/>
             </Canvas>
             <View style={styles.padding}/>
             <View style={styles.banner}>
@@ -122,11 +121,6 @@ const styles = StyleSheet.create({
         width: "100%",
         textAlign: 'center',
     },
-    // bottomText: {
-    //     fontSize: 24, // Increase the font size
-    //     fontWeight: 'bold',
-    //     color: colorScheme.text // Make the text bold
-    // },
     safeArea: {
         height:'100%',
         backgroundColor: colorScheme.background
