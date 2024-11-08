@@ -1,22 +1,30 @@
-import {
-    View,
-    Text,
-    StyleSheet,
-    Dimensions
-} from 'react-native';
-import React, {useRef, useEffect} from 'react';
-import Canvas from 'react-native-canvas';
+import {View, Text, StyleSheet, Dimensions, Platform} from 'react-native';
+import React, {useRef, useEffect,useReducer} from 'react';
+//import Canvas from 'react-native-canvas';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import colorScheme from "../styles/colorScheme";
+import { Canvas, Circle, Group, Text as SkiaText, useFont, matchFont, Skia } from "@shopify/react-native-skia";
 
 import vatuHook from "../hooks/vatuHook";
+
+const fontFamily = Platform.select({ ios: "Helvetica", default: "sans-serif" });
+const fontStyle = {
+  fontFamily,
+  fontSize: 60,
+  fontStyle: "normal",
+  fontWeight: "normal",
+};
+const font = matchFont(fontStyle);
 
 const windowDimensions = Dimensions.get('window');
 const screenDimensions = Dimensions.get('screen');
 
+const textXOffset = 0.15*windowDimensions.width;
+const textYOffset = 20;
+
 const MainScreen = () => {
-    const canvasRef = useRef(null);
     const slopeAndOrientation = vatuHook();
+    const degreesRef = useRef(null);
     const dimensions = {
         window: windowDimensions,
         screen: screenDimensions,
@@ -29,105 +37,22 @@ const MainScreen = () => {
      * @returns {number}
      */
     const getRadius = (width, height) => {
-        return Math.min(width, height) / 3;
+        return Math.min(width, height) / 2.5;
     }
 
     /**
      * Calculate small indicator circle coordinates from direction given by useSpiritLevel-hook.
+     * @param width width of the canvas
+     * @param height height of the canvas
      * @returns {{x: number, y: number}}
      */
-    const getPositionUsingCurrentDirection = (canvas) => {
-        const [width, height] = [canvas.width, canvas.height];
-        const direction = slopeAndOrientation.direction;
-        // const radians = direction * (Math.PI / 180);
+    const getPositionUsingCurrentDirection = (width,height) => {
+        const direction = slopeAndOrientation.direction; //direction in radians
         const xVal = Math.cos(direction) * getRadius(width, height);
-        const yVal = Math.sin(-direction) * getRadius(width, height);
+        const yVal = Math.sin(direction) * getRadius(width, height);
         return {x: xVal, y: yVal};
     }
 
-    /**
-     * Draws the spirit level indicator.
-     * @param ref
-     */
-    const drawSpiritLevel = () => {
-        if (canvasRef.current) {
-            const canvas = canvasRef.current;
-            canvas.width = dimensions.window.width; // Set the canvas width
-            canvas.height = dimensions.window.width; // Set the canvas height
-
-            drawLargeCircles(canvas);
-            drawOrientationDirectionCircle(canvas);
-            showSlopeDegrees(canvas, slopeAndOrientation.combinedAngle);
-        }
-    }
-
-    /**
-     * Draw spirit level indicator outer circle onto `canvas`
-     * @param canvas
-     */
-    const drawLargeCircles = (canvas) => {
-
-        const ctx = canvas.getContext('2d');
-        const [width, height] = [canvas.width, canvas.height];
-
-        // Large circle parameters
-        const radius = getRadius(width, height);
-        const origo = {x: width / 2, y: height / 2};
-        const startX = origo.x;
-        const startY = origo.y;
-
-        // Draw large circle
-        ctx.beginPath();
-        ctx.arc(startX, startY, radius, 0, 2 * Math.PI);
-        ctx.closePath();
-        ctx.fillStyle = '#F8F2E8';
-        ctx.fill();
-        ctx.lineWidth = 20; // Set the line width
-        ctx.strokeStyle = colorScheme.accent; // Set the stroke color
-        ctx.stroke(); // Apply the stroke
-    }
-
-    /**
-     * Draw slope direction indicator circle.
-     * @param canvas
-     */
-    const drawOrientationDirectionCircle = (canvas) => {
-        const [width, height] = [canvas.width, canvas.height];
-        const origo = {x: width / 2, y: height / 2};
-
-        // Smaller circle parameters
-        const radius2 = Math.min(width, height) / 20;
-        const startX2 = origo.x;
-        const startY2 = origo.y;
-
-        // Draw smaller circle
-        let ctx = canvas.getContext('2d');
-        const {x, y} = getPositionUsingCurrentDirection(canvas)
-        ctx.beginPath();
-        ctx.arc(startX2 + x, startY2 - y, radius2, 0, 2 * Math.PI);
-        ctx.closePath();
-        ctx.fillStyle = colorScheme.primary;
-        ctx.fill();
-    }
-
-    /**
-     * Draw slope degrees text onto canvas.
-     * @param canvas
-     * @param degreesText
-     */
-    const showSlopeDegrees = (canvas, degreesText) => {
-        let ctx = canvas.getContext('2d');
-        const [width, height] = [canvas.width, canvas.height];
-        ctx.fillStyle = colorScheme.text; // Set the text color
-        ctx.font = '60px Arial'; // Set the font size and family
-        ctx.textAlign = 'center'; // Center the text horizontally
-        ctx.textBaseline = 'middle'; // Center the text vertically
-        ctx.fillText(degreesText + ' °', 0.5 * width, height / 2);
-    }
-
-    useEffect(() => {
-        drawSpiritLevel(canvasRef);
-    }, [canvasRef, slopeAndOrientation]);
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -135,7 +60,29 @@ const MainScreen = () => {
                 <Text style={styles.bannerText}>Vatupassi</Text>
             </View>
             <View style={styles.padding}/>
-            <Canvas ref={canvasRef} style={{...styles.canvas}}/>
+            <Canvas style={{...styles.canvas}}>
+                <Group>
+                    <Circle  // Rim
+                        cx={dimensions.window.width / 2}
+                        cy={dimensions.window.width / 2}
+                        r={getRadius(dimensions.window.width, dimensions.window.width)+10}
+                        color={colorScheme.accent}
+                    />
+                    <Circle  // Inner circle
+                        cx={dimensions.window.width / 2}
+                        cy={dimensions.window.width / 2}
+                        r={getRadius(dimensions.window.width, dimensions.window.width) - 10}
+                        color={colorScheme.innerCircle}
+                    />
+                    <Circle // Indicator circle
+                        cx={dimensions.window.width / 2 + getPositionUsingCurrentDirection(dimensions.window.width, dimensions.window.width).x}
+                        cy={dimensions.window.width / 2 + getPositionUsingCurrentDirection(dimensions.window.width, dimensions.window.width).y}
+                        r={Math.min(dimensions.window.width, dimensions.window.width) / 20}
+                        color={colorScheme.primary}
+                    />
+                </Group>
+                <SkiaText ref={degreesRef} x={dimensions.window.width / 2 - textXOffset} y={dimensions.window.width / 2 + textYOffset} text={slopeAndOrientation.combinedAngle + "°"}  font={font}/>
+            </Canvas>
             <View style={styles.padding}/>
             <View style={styles.banner}>
                 <Text style={styles.bannerText}>FUBAR</Text>
@@ -157,6 +104,8 @@ const styles = StyleSheet.create({
         marginTop: "auto",
         marginBottom: "auto",
         backgroundColor: colorScheme.background,
+        width: windowDimensions.width,
+        height: windowDimensions.width,
     },
     padding: {
         height:20,

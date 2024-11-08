@@ -24,9 +24,6 @@ const useSpiritLevel = () => {
     const [isAvailable, setIsAvailable] = useState(null);
     const [orientation, setOrientation] = useState({ alpha: 0, beta: 0, gamma: 0, combinedAngle: 0, direction: 0, status: hasPermission });
 
-    // Calculate the combined angle using the Pythagorean theorem
-    
-    //orientation.combinedAngle = combine(orientation.beta, orientation.gamma);
 
     useEffect(() => {
         const requestPermission = async () => {
